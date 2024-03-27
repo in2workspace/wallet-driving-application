@@ -1,8 +1,8 @@
 export const environment = {
   production: false,
-  server_url: 'http://localhost:8081',
+  server_url: 'http://localhost:8080',
   iam_url:'http://localhost:9099',
-  websocket_url:'ws://localhost:8081',
+  websocket_url:'ws://localhost:8080',
   iam_params: {
     iam_uri:'/realms/wallet',
     client_id: 'auth-client',
@@ -17,6 +17,7 @@ export const environment = {
     credentials_by_id_uri: '/api/v2/credentials?credentialId=',
     users_uri: '/api/v2/users',
     ebsi_did_uri: '/api/v2/ebsi-did',
+    cbor: '/api/v2/vp/cbor'    
   },
   websocket_uri:'/api/v2/pin'
 

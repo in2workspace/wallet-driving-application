@@ -1,22 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, PopoverController } from '@ionic/angular';
-import { StorageService } from 'src/app/services/storage.service';
-import { QRCodeModule } from 'angular2-qrcode';
-import { VCReply, WalletService } from 'src/app/services/wallet.service';
+import { IonicModule } from '@ionic/angular';
+import { QRCodeModule } from 'angularx-qrcode';
+import { WalletService } from 'src/app/services/wallet.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { AuthenticationService } from 'src/app/services/authentication.service';
 import { VcViewComponent } from '../../components/vc-view/vc-view.component';
-import { LogoutPage } from '../logout/logout.page';
+import { VCReply } from 'src/app/interfaces/verifiable-credential-reply';
 
 @Component({
   selector: 'app-vc-selector',
   templateUrl: './vc-selector.page.html',
   styleUrls: ['./vc-selector.page.scss'],
   standalone: true,
-  providers: [StorageService],
   imports: [
     IonicModule,
     CommonModule,
@@ -40,13 +37,10 @@ export class VcSelectorPage implements OnInit {
     state: '',
     redirectUri: '',
   };
-  test: any = `<img src="../assets/icon/Tick/checkmark-verd.png" alt="g-maps" style="border-radius: 2px">`;
   constructor(
     private router: Router,
     private walletService: WalletService,
     private route: ActivatedRoute,
-    private authenticationService: AuthenticationService,
-    private popoverController: PopoverController,
     public translate: TranslateService
   ) {
     this.route.queryParams.subscribe((params) => {
@@ -57,8 +51,6 @@ export class VcSelectorPage implements OnInit {
   }
 
   ngOnInit() {
-    this.userName = this.authenticationService.getName();
-
     this.credList = this.executionResponse['selectableVcList'];
     this.credList.forEach((credential) => {
       this.isClick.push(false);
@@ -69,15 +61,6 @@ export class VcSelectorPage implements OnInit {
     return this.isClick[index];
   }
 
-  async openPopover(ev: any) {
-    const popover = await this.popoverController.create({
-      component: LogoutPage,
-      event: ev,
-      translucent: true,
-    });
-
-    await popover.present();
-  }
 
   selectCred(cred: any, index: number) {
     this.selCredList.push(cred);
@@ -87,16 +70,11 @@ export class VcSelectorPage implements OnInit {
     this.selCredList.push(cred);
     this._VCReply.selectedVcList = this.selCredList;
     this.walletService.executeVC(this._VCReply).subscribe({
-      next: (authenticationResponse) => {
-        this.isAlertOpen = true;
+      next: () => {
         this.isAlertOpen = true;
       },
       error: (err) => {
-        let TIME_IN_MS = 1500;
-        setTimeout(() => {
-          this.isAlertOpenFail = false;
-        }, TIME_IN_MS);
-        this.isAlertOpenFail = true;
+        console.error(err);
       },
     });
   }
@@ -112,7 +90,6 @@ export class VcSelectorPage implements OnInit {
     },
   ];
 
-  isAlertOpenFail = false;
 
   isAlertOpen = false;
   public alertButtons = ['OK'];
